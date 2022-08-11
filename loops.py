@@ -7,6 +7,7 @@ class Tasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.checkPATickets.start()
+        self.last_value = None
 
     @tasks.loop(seconds=30.0)
     async def checkPATickets(self):
@@ -24,6 +25,9 @@ class Tasks(commands.Cog):
 
         if data['badges']['out_of_stock'] is False:
             tickets_available = data['inventory']['total']
-            for channel in channels:
-                await channel.send(f"There may be {tickets_available} tickets available to PA Re-raise\nhttps://checkout.square.site/buy/SETUC3BOVOYJINH2NKV4D5HT")
+
+            if self.last_value != tickets_available:
+                self.last_value = tickets_available
+                for channel in channels:
+                    await channel.send(f"There may be {tickets_available} tickets available to PA Re-raise\nhttps://checkout.square.site/buy/SETUC3BOVOYJINH2NKV4D5HT")
 
